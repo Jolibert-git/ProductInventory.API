@@ -1,4 +1,7 @@
 
+using Microsoft.EntityFrameworkCore;
+using ProductInventory.API.Context;
+
 namespace ProductInventory.API
 {
     public class Program
@@ -8,6 +11,9 @@ namespace ProductInventory.API
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+               options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
