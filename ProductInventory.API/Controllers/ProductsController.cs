@@ -64,6 +64,31 @@ namespace ProductInventory.API.Controllers
             return Ok(products);
         }
 
+        [HttpGet("sorted")]
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsSorted(
+           [FromQuery] string sortBy = "name",
+           [FromQuery] bool descending = false)
+        {
+            var query = _context.Products.AsQueryable();
+
+            query = sortBy.ToLower() switch
+            {
+                "price" => descending
+                    ? query.OrderByDescending(p => p.Price)
+                    : query.OrderBy(p => p.Price),
+                "name" => descending
+                    ? query.OrderByDescending(p => p.Name)
+                    : query.OrderBy(p => p.Name),
+                _ => query.OrderBy(p => p.Name)
+            };
+
+            var products = await query
+                .Select(p => MapToDto(p))
+                .ToListAsync();
+
+            return Ok(products);
+        }
+
         // POST: api/products
         [HttpPost]
         public async Task<ActionResult<ProductDto>> CreateProduct(ProductCreateDto dto)
