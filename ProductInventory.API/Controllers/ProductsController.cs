@@ -45,6 +45,9 @@ namespace ProductInventory.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ProductDto>> CreateProduct(ProductCreateDto dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var product = new Product
             {
                 Name = dto.Name,
@@ -64,6 +67,9 @@ namespace ProductInventory.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(int id, ProductUpdateDto dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var product = await _context.Products.FindAsync(id);
 
             if (product == null)
