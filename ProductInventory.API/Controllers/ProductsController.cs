@@ -41,6 +41,29 @@ namespace ProductInventory.API.Controllers
             return Ok(MapToDto(product));
         }
 
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<ProductDto>>> SearchProducts(
+           [FromQuery] string? name,
+           [FromQuery] string? category)
+        {
+            var query = _context.Products.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(name))
+                query = query.Where(p => p.Name.Contains(name));
+
+            if (!string.IsNullOrWhiteSpace(category))
+                query = query.Where(p => p.Category.Contains(category));
+
+            var products = await query
+                .Select(p => MapToDto(p))
+                .ToListAsync();
+
+            if (!products.Any())
+                return NotFound("No products found matching the search criteria.");
+
+            return Ok(products);
+        }
+
         // POST: api/products
         [HttpPost]
         public async Task<ActionResult<ProductDto>> CreateProduct(ProductCreateDto dto)
